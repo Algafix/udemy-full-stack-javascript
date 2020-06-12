@@ -16,24 +16,6 @@ const fields = [
 
 
 class Contact extends Component {
-    
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            name: '',
-            email: '',
-            phone: '',
-            message: ''
-        }
-    }
-    
-
-    submitForm = (e) => {
-      alert("Form submited, thxxxx");
-    }
-
-
     render() {
         return(
           <section id="contact">
@@ -46,7 +28,7 @@ class Contact extends Component {
               </div>
               <div className="row">
                 <div className="col-lg-12">
-                  <form onSubmit={e => this.submitForm(e)} name="sentMessage" noValidate="novalidate">
+                  <form onSubmit={this.props.handleSubmit} name="sentMessage" noValidate="novalidate">
                     <div className="row">
                       {fields.map((section, sectionIndex) =>{
                         return(
@@ -54,9 +36,13 @@ class Contact extends Component {
                             {section.map((field, index) => {
                               return <Field 
                                         {...field} 
-                                        key={index} 
-                                        value={this.state[field.name]} 
-                                        onChange={e => this.setState({[field.name]: e.target.value})}
+                                        key={index}
+                                        value={this.props.values[field.name]}
+                                        name={field.name}
+                                        onChange={this.props.handleChange}
+                                        onBlur={this.props.handleBlur}
+                                        touched={(this.props.touched[field.name])}
+                                        errors={this.props.errors[field.name]}
                                         />
                             })}
                           </div>
@@ -99,6 +85,6 @@ export default withFormik({
     return errors;
   },
   handleSubmit: (values, {setSubmitting}) => {
-    alert("You've submitted the form");
+    alert("You've submitted the form.");
   }
 })(Contact);
