@@ -1,7 +1,7 @@
 var models = require('./server.js').models;
 
 // Ways to update data
-// $ node server/update-data-test.js
+// $ node server/test-update-data.js
 // See the results in mongo database
 models.Profile.findOrCreate({name: "nick2"}, (err, profile) => {
     if(err) {
