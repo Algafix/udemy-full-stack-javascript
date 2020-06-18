@@ -7,6 +7,7 @@
 
 const loopback = require('loopback');
 const boot = require('loopback-boot');
+const { Role } = require('loopback');
 
 const app = module.exports = loopback();
 
@@ -47,4 +48,47 @@ app.models.user.afterRemote("create", (ctx, user, next) => {
     }
     next();
   });
+});
+
+
+/*
+  If there is no admin role, creates one and assign the first user this role.
+*/
+app.models.Role.find({where: {name: "admin"}}, (err, role) => {
+  if(!err && role) {
+    console.log('No error, role is', role);
+    if(role.length === 0) {
+      app.models.Role.create({
+        name: 'admin'
+      }, (err2, result) => {
+        if(!err2 && result) {
+          app.models.user.findOne((userrr, user) => {
+            if(!userrr && user) {
+              result.principals.create({
+                principalType: app.models.RoleMapping.USER,
+                principalId: user.id
+              }, (err3, principal) => {
+                console.log("Created principal", err3, principal);
+              });
+            }
+          });
+        }
+      });
+    }
+  }
+});
+
+/*
+  If there's no editor role created, creates one
+*/
+app.models.Role.find({where: {name: 'editor'}}, (err, roles) => {
+  if(!err && roles) {
+    if(roles.length === 0) {
+      app.models.Role.create({
+        name: "editor",
+      }, (creationErr, result) => {
+        console.log("Created editor", creationErr, result);
+      });
+    }
+  }
 });
